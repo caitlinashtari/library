@@ -11,16 +11,29 @@ class Book
     books = []
     all_books.each() do |book|
       title = book.fetch('title')
-      books.push(Book.new({:title => title, :id => nil}))
+      id = book.fetch('id').to_i
+      books.push(Book.new({:title => title, :id => id}))
     end
     books
   end
 
   define_method(:save) do
-     DB.exec("INSERT INTO books (title) VALUES ('#{@title}');")
+     result = DB.exec("INSERT INTO books (title) VALUES ('#{@title}') RETURNING id;")
+     @id = result.first().fetch("id").to_i()
   end
 
   define_method(:==) do |another_book|
     self.title().==(another_book.title()).&(self.id().==(another_book.id()))
   end
+
+  define_singleton_method(:find) do |id|
+    found_book = nil
+    Book.all().each() do |book|
+      if book.id().==(id)
+        found_book = book
+      end
+    end
+    found_book
+  end
+
 end
