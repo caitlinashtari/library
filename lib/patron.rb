@@ -11,16 +11,39 @@ class Patron
     patrons = []
     all_patrons.each() do |patron|
       name = patron.fetch('name')
-      patrons.push(Patron.new({:name => name, :id => nil}))
+      id = patron.fetch('id').to_i
+      patrons.push(Patron.new({:name => name, :id => id}))
     end
     patrons
   end
 
   define_method(:save) do
-     DB.exec("INSERT INTO patrons (name) VALUES ('#{@name}');")
+
+     result = DB.exec("INSERT INTO patrons (name) VALUES ('#{@name}') RETURNING id;")
+     @id = result.first().fetch("id").to_i()
   end
 
   define_method(:==) do |another_patron|
     self.name().==(another_patron.name()).&(self.id().==(another_patron.id()))
+  end
+
+  define_singleton_method(:find) do |id|
+    found_patron = nil
+    Patron.all().each() do |patron|
+      if patron.id().==(id)
+        found_patron = patron
+      end
+    end
+    found_patron
+  end
+
+  define_method(:update) do |attributes|
+    @name = attributes.fetch(:name, @name)
+    @id = self.id()
+    DB.exec("UPDATE patrons SET name = '#{@name}' WHERE id = #{@id};")
+  end
+
+  define_method(:delete) do
+    DB.exec("DELETE FROM patrons WHERE id = #{self.id()};")
   end
 end
