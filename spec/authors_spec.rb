@@ -47,6 +47,16 @@ describe(Author) do
       author.update({:name => "Stephen Edwin King"})
       expect(author.name()).to(eq("Stephen Edwin King"))
     end
+    # it('lets you add an author to a book') do
+    #   author = Author.new({:name => "JK Rowling", :id => nil})
+    #   author.save()
+    #   book = Book.new({:title => "Harry Potter and the Sorcerers Stone", :id => nil})
+    #   book.save()
+    #   book2 = Book.new({:title => "Harry Potter and the Chamber of Secrets", :id => nil})
+    #   book2.save()
+    #   author.update({:book_ids => [book1.id(), book2.id()]})
+    #   expect(author.books()).to(eq([book1, book2]))
+    # end
   end
 
   describe("#delete") do
